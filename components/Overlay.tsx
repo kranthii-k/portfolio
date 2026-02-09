@@ -30,7 +30,7 @@ export default function Overlay() {
                 className="absolute top-[150vh] left-10 md:left-32 max-w-xl"
             >
                 <h2 className="text-4xl md:text-6xl font-semibold text-white leading-tight">
-                    I build <span className="text-blue-400">digital experiences</span> that defy expectations.
+                    I build <span className="text-blue-400">interactive web experiences</span> with precision and purpose.
                 </h2>
             </motion.div>
 
