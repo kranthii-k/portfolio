@@ -9,12 +9,46 @@ export default function Contact() {
         email: '',
         message: ''
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Add your form submission logic here
-        console.log('Form submitted:', formData);
-        alert('Message sent! (This is a demo - connect your backend)');
+        setIsSubmitting(true);
+        setSubmitStatus('idle');
+
+        try {
+            const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY,
+                    to: process.env.NEXT_PUBLIC_CONTACT_EMAIL,
+                    name: formData.name,
+                    email: formData.email,
+                    message: formData.message,
+                    subject: `New Contact Form Submission from ${formData.name}`,
+                    from_name: 'Portfolio Contact Form',
+                }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setSubmitStatus('success');
+                setFormData({ name: '', email: '', message: '' });
+                setTimeout(() => setSubmitStatus('idle'), 5000);
+            } else {
+                setSubmitStatus('error');
+            }
+        } catch (error) {
+            console.error('Form submission error:', error);
+            setSubmitStatus('error');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -48,10 +82,10 @@ export default function Contact() {
                                     Email
                                 </h3>
                                 <a 
-                                    href="mailto:your.email@example.com"
+                                    href="mailto:k.kranthi.career@gmail.com"
                                     className="text-2xl text-white hover:text-blue-400 transition-colors"
                                 >
-                                    your.email@example.com
+                                    k.kranthi.career@gmail.com
                                 </a>
                             </div>
 
@@ -60,7 +94,7 @@ export default function Contact() {
                                     Location
                                 </h3>
                                 <p className="text-2xl text-white">
-                                    Your City, Country
+                                    Bengaluru, India
                                 </p>
                             </div>
 
@@ -133,12 +167,39 @@ export default function Contact() {
 
                             <motion.button
                                 type="submit"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="w-full px-8 py-4 bg-white text-black font-bold rounded-lg hover:bg-white/90 transition-colors text-lg"
+                                disabled={isSubmitting}
+                                whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+                                whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                                className={`w-full px-8 py-4 font-bold rounded-lg transition-colors text-lg ${
+                                    isSubmitting 
+                                        ? 'bg-white/50 text-black/50 cursor-not-allowed' 
+                                        : 'bg-white text-black hover:bg-white/90'
+                                }`}
                             >
-                                Send Message →
+                                {isSubmitting ? 'Sending...' : 'Send Message →'}
                             </motion.button>
+
+                            {/* Success Message */}
+                            {submitStatus === 'success' && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-center"
+                                >
+                                    ✓ Message sent successfully! I'll get back to you soon.
+                                </motion.div>
+                            )}
+
+                            {/* Error Message */}
+                            {submitStatus === 'error' && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-center"
+                                >
+                                    ✗ Something went wrong. Please try again or email me directly.
+                                </motion.div>
+                            )}
                         </form>
                     </motion.div>
                 </div>

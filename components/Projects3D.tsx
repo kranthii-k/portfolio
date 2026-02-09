@@ -127,7 +127,7 @@ export default function Projects3D() {
             cards.push(mesh);
         });
 
-        // Scroll handling - FIXED
+        // Scroll handling
         const handleScroll = () => {
             if (!containerRef.current) return;
 
@@ -135,26 +135,22 @@ export default function Projects3D() {
             const containerTop = rect.top;
             const windowHeight = window.innerHeight;
             
-            // Calculate how much we've scrolled into the container
             const scrolled = -containerTop;
             const maxScroll = rect.height - windowHeight;
             
-            // Get progress from 0 to 1
             const progress = Math.max(0, Math.min(1, scrolled / maxScroll));
             
             scrollProgressRef.current = progress;
 
-            // Update header opacity
             const fadeStart = windowHeight * 0.3;
             setScrollOpacity(Math.max(0, 1 - (scrolled / fadeStart)));
 
-            // Update current project
             const newIndex = Math.round(progress * (projects.length - 1));
             setCurrentProject(newIndex);
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // Initial call
+        handleScroll();
 
         // Mouse interaction
         const raycaster = new THREE.Raycaster();
@@ -209,28 +205,22 @@ export default function Projects3D() {
 
             const progress = scrollProgressRef.current;
 
-            // Move the entire group
             cardGroup.position.y = progress * (projects.length - 1) * 6;
 
-            // Update each card
             cards.forEach((card, idx) => {
                 const cardScroll = progress * (projects.length - 1);
                 const distance = Math.abs(idx - cardScroll);
 
-                // Scale
                 const scale = 1 - Math.min(distance * 0.3, 0.7);
                 card.scale.set(scale, scale, 1);
 
-                // Opacity
                 const material = card.material as THREE.MeshStandardMaterial;
                 material.opacity = 1 - Math.min(distance * 0.4, 0.8);
                 material.transparent = true;
 
-                // Rotation
                 card.rotation.y = (idx - cardScroll) * 0.15;
                 card.rotation.x = (idx - cardScroll) * 0.05;
 
-                // Z position
                 card.position.z = -idx * 0.5 + (1 - distance) * 2;
             });
 
@@ -246,207 +236,197 @@ export default function Projects3D() {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('click', handleClick);
             window.removeEventListener('resize', handleResize);
-            renderer.dispose();
+            
             cards.forEach(card => {
                 card.geometry.dispose();
                 (card.material as THREE.Material).dispose();
             });
+            renderer.dispose();
         };
     }, []);
 
     return (
-    <section
-        ref={containerRef}
-        className="relative bg-black"
-        style={{ height: `${projects.length * 100}vh` }}
-    >
-        <div className="sticky top-0 left-0 w-full h-screen overflow-hidden">
-            {/* Header - Fades out on scroll */}
-            <motion.div
-                className="absolute top-8 md:top-16 left-0 right-0 z-10 text-center pointer-events-none px-4"
-                style={{ opacity: scrollOpacity }}
-            >
-                <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white mb-2 md:mb-4">
-                    Selected Work
-                </h2>
-                <p className="text-sm md:text-xl text-white/60">
-                    Scroll through projects
-                </p>
-            </motion.div>
+        <section
+            ref={containerRef}
+            className="relative bg-black"
+            style={{ height: `${projects.length * 100}vh` }}
+        >
+            <div className="sticky top-0 left-0 w-full h-screen overflow-hidden">
+                {/* Header */}
+                <motion.div
+                    className="absolute top-8 md:top-16 left-0 right-0 z-10 text-center pointer-events-none px-4"
+                    style={{ opacity: scrollOpacity }}
+                >
+                    <h2 className="text-3xl md:text-5xl lg:text-7xl font-bold text-white mb-2 md:mb-4">
+                        Selected Work
+                    </h2>
+                    <p className="text-sm md:text-xl text-white/60">
+                        Scroll through projects
+                    </p>
+                </motion.div>
 
-            {/* Three.js Canvas */}
-            <canvas ref={canvasRef} className="w-full h-full" />
+                {/* Canvas */}
+                <canvas ref={canvasRef} className="w-full h-full" />
 
-            {/* Mobile Layout - Bottom Info Card */}
-            <div className="md:hidden absolute bottom-0 left-0 right-0 z-20 pointer-events-auto">
+                {/* Mobile - Bottom Card */}
+                <div className="md:hidden absolute bottom-0 left-0 right-0 z-20 pointer-events-auto">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={`mobile-${currentProject}`}
+                            initial={{ opacity: 0, y: 100 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 100 }}
+                            transition={{ duration: 0.5 }}
+                            className="bg-black/80 backdrop-blur-xl border-t border-white/10 p-6"
+                        >
+                            <div className="text-blue-400 text-xs font-medium tracking-widest uppercase mb-2">
+                                {projects[currentProject].category}
+                            </div>
+
+                            <h3 className="text-2xl font-bold text-white mb-3">
+                                {projects[currentProject].title}
+                            </h3>
+
+                            <p className="text-white/70 text-sm leading-relaxed mb-4">
+                                {projects[currentProject].description}
+                            </p>
+
+                            <div className="mb-4">
+                                <div className="text-white/50 text-xs uppercase tracking-wider mb-2">
+                                    Tech Stack
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {projects[currentProject].tech.map((tech, i) => (
+                                        <span
+                                            key={i}
+                                            className="px-2 py-1 bg-white/10 text-white/90 text-xs rounded-md border border-white/20"
+                                        >
+                                            {tech}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-3">
+                                <a
+                                    href={projects[currentProject].link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 px-4 py-2.5 bg-white text-black font-semibold rounded-lg text-sm text-center active:scale-95 transition-transform"
+                                >
+                                    View Live →
+                                </a>
+                                <a
+                                    href={projects[currentProject].github}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-4 py-2.5 border border-white/30 text-white font-semibold rounded-lg text-sm active:scale-95 transition-transform"
+                                >
+                                    GitHub ↗
+                                </a>
+                            </div>
+
+                            <div className="text-center text-white/40 text-sm font-bold mt-4">
+                                {String(currentProject + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+                            </div>
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+
+                {/* Desktop - Left Side */}
                 <AnimatePresence mode="wait">
                     <motion.div
-                        key={`mobile-${currentProject}`}
-                        initial={{ opacity: 0, y: 100 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 100 }}
+                        key={`left-${currentProject}`}
+                        initial={{ opacity: 0, x: -50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
                         transition={{ duration: 0.5 }}
-                        className="bg-black/80 backdrop-blur-xl border-t border-white/10 p-6"
+                        className="hidden md:block absolute left-6 lg:left-10 top-1/2 -translate-y-1/2 w-64 lg:w-80 z-20 pointer-events-auto"
                     >
-                        {/* Category */}
-                        <div className="text-blue-400 text-xs font-medium tracking-widest uppercase mb-2">
-                            {projects[currentProject].category}
-                        </div>
-
-                        {/* Title */}
-                        <h3 className="text-2xl font-bold text-white mb-3">
-                            {projects[currentProject].title}
-                        </h3>
-
-                        {/* Description */}
-                        <p className="text-white/70 text-sm leading-relaxed mb-4">
-                            {projects[currentProject].description}
-                        </p>
-
-                        {/* Tech Stack */}
-                        <div className="mb-4">
-                            <div className="text-white/50 text-xs uppercase tracking-wider mb-2">
-                                Tech Stack
+                        <div className="space-y-6">
+                            <div className="text-blue-400 text-sm font-medium tracking-widest uppercase">
+                                {projects[currentProject].category}
                             </div>
-                            <div className="flex flex-wrap gap-2">
-                                {projects[currentProject].tech.map((tech, i) => (
-                                    <span
-                                        key={i}
-                                        className="px-2 py-1 bg-white/10 text-white/90 text-xs rounded-md border border-white/20"
-                                    >
-                                        {tech}
-                                    </span>
-                                ))}
+
+                            <div>
+                                <div className="text-white/50 text-xs uppercase tracking-wider mb-3">
+                                    Tech Stack
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {projects[currentProject].tech.map((tech, i) => (
+                                        <span
+                                            key={i}
+                                            className="px-3 py-1.5 bg-white/10 text-white/90 text-sm rounded-lg border border-white/20 backdrop-blur-sm"
+                                        >
+                                            {tech}
+                                        </span>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Links */}
-                        <div className="flex gap-3">
-                            <a
-                                href={projects[currentProject].link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-1 px-4 py-2.5 bg-white text-black font-semibold rounded-lg text-sm text-center active:scale-95 transition-transform"
-                            >
-                                View Live →
-                            </a>
-                            <a
-                                href={projects[currentProject].github}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="px-4 py-2.5 border border-white/30 text-white font-semibold rounded-lg text-sm active:scale-95 transition-transform"
-                            >
-                                GitHub ↗
-                            </a>
-                        </div>
-
-                        {/* Counter */}
-                        <div className="text-center text-white/40 text-sm font-bold mt-4">
-                            {String(currentProject + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+                            <div className="space-y-3">
+                                <a
+                                    href={projects[currentProject].link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-white/90 transition-all text-center hover:scale-105"
+                                >
+                                    View Live →
+                                </a>
+                                <a
+                                    href={projects[currentProject].github}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full px-6 py-3 border border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-all text-center hover:scale-105"
+                                >
+                                    GitHub ↗
+                                </a>
+                            </div>
                         </div>
                     </motion.div>
                 </AnimatePresence>
+
+                {/* Desktop - Right Side */}
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={`right-${currentProject}`}
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 50 }}
+                        transition={{ duration: 0.5 }}
+                        className="hidden md:block absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 w-80 lg:w-96 z-20 pointer-events-none"
+                    >
+                        <div className="space-y-4">
+                            <h3 className="text-3xl lg:text-5xl font-bold text-white leading-tight">
+                                {projects[currentProject].title}
+                            </h3>
+
+                            <p className="text-white/70 text-base lg:text-lg leading-relaxed">
+                                {projects[currentProject].description}
+                            </p>
+                        </div>
+                    </motion.div>
+                </AnimatePresence>
+
+                {/* Desktop Counter */}
+                <div className="hidden md:block absolute bottom-10 right-10 text-white/60 text-2xl font-bold pointer-events-none z-10">
+                    {String(currentProject + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+                </div>
+
+                {/* Scroll Indicator */}
+                <motion.div
+                    className="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 text-white/40 text-sm flex-col items-center gap-2 pointer-events-none z-10"
+                    style={{ opacity: scrollOpacity }}
+                >
+                    <span>SCROLL</span>
+                    <motion.div
+                        animate={{ y: [0, 10, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                        ↓
+                    </motion.div>
+                </motion.div>
             </div>
-
-            {/* Desktop Layout - Left Side: Tech Stack & Links */}
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={`left-${currentProject}`}
-                    initial={{ opacity: 0, x: -50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    transition={{ duration: 0.5 }}
-                    className="hidden md:block absolute left-6 lg:left-10 top-1/2 -translate-y-1/2 w-64 lg:w-80 z-20 pointer-events-auto"
-                >
-                    <div className="space-y-6">
-                        {/* Category */}
-                        <div className="text-blue-400 text-sm font-medium tracking-widest uppercase">
-                            {projects[currentProject].category}
-                        </div>
-
-                        {/* Tech Stack */}
-                        <div>
-                            <div className="text-white/50 text-xs uppercase tracking-wider mb-3">
-                                Tech Stack
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {projects[currentProject].tech.map((tech, i) => (
-                                    <span
-                                        key={i}
-                                        className="px-3 py-1.5 bg-white/10 text-white/90 text-sm rounded-lg border border-white/20 backdrop-blur-sm"
-                                    >
-                                        {tech}
-                                    </span>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Links */}
-                        <div className="space-y-3">
-                            <a
-                                href={projects[currentProject].link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block w-full px-6 py-3 bg-white text-black font-semibold rounded-lg hover:bg-white/90 transition-all text-center hover:scale-105"
-                            >
-                                View Live →
-                            </a>
-                            <a
-                                href={projects[currentProject].github}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="block w-full px-6 py-3 border border-white/30 text-white font-semibold rounded-lg hover:bg-white/10 transition-all text-center hover:scale-105"
-                            >
-                                GitHub ↗
-                            </a>
-                        </div>
-                    </div>
-                </motion.div>
-            </AnimatePresence>
-
-            {/* Desktop Layout - Right Side: Description */}
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={`right-${currentProject}`}
-                    initial={{ opacity: 0, x: 50 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 50 }}
-                    transition={{ duration: 0.5 }}
-                    className="hidden md:block absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 w-80 lg:w-96 z-20 pointer-events-none"
-                >
-                    <div className="space-y-4">
-                        {/* Title */}
-                        <h3 className="text-3xl lg:text-5xl font-bold text-white leading-tight">
-                            {projects[currentProject].title}
-                        </h3>
-
-                        {/* Description */}
-                        <p className="text-white/70 text-base lg:text-lg leading-relaxed">
-                            {projects[currentProject].description}
-                        </p>
-                    </div>
-                </motion.div>
-            </AnimatePresence>
-
-            {/* Desktop Counter - Bottom Right */}
-            <div className="hidden md:block absolute bottom-10 right-10 text-white/60 text-2xl font-bold pointer-events-none z-10">
-                {String(currentProject + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
-            </div>
-
-            {/* Scroll Indicator - Bottom Center (Desktop only) */}
-            <motion.div
-                className="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 text-white/40 text-sm flex-col items-center gap-2 pointer-events-none z-10"
-                style={{ opacity: scrollOpacity }}
-            >
-                <span>SCROLL</span>
-                <motion.div
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                    ↓
-                </motion.div>
-            </motion.div>
-        </div>
-    </section>
-);
+        </section>
+    );
 }
