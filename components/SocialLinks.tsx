@@ -13,7 +13,7 @@ const socialLinks = [
     {
         name: 'LinkedIn',
         icon: FaLinkedin,
-        url: 'https://linkedin.com/in/yourprofile',
+        url: 'https://www.linkedin.com/in/kranthii-k',
         color: '#0A66C2'
     },
     {
