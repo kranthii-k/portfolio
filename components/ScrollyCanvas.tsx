@@ -25,8 +25,8 @@ export default function ScrollyCanvas({ children }: { children?: React.ReactNode
 
         for (let i = 0; i < frameCount; i++) {
             const img = new Image();
-            const paddedIndex = String(i).padStart(3, '0');
-            img.src = `/sequence/frame_${paddedIndex}_delay-0.05s.webp`;
+const paddedIndex = String(i + 1).padStart(4, '0'); // Changed padding to 4 digits starting from 1
+img.src = `/sequence/frame_${paddedIndex}.avif`;
             img.onload = () => {
                 loadedCount++;
                 if (loadedCount === frameCount) {
