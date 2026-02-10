@@ -82,7 +82,8 @@ export default function Projects3D() {
             0.1,
             100
         );
-        camera.position.z = 8;
+        camera.position.z = window.innerWidth >= 768 ? 10 : 8;
+
 
         // Renderer
         const renderer = new THREE.WebGLRenderer({
@@ -111,14 +112,20 @@ export default function Projects3D() {
             const texture = textureLoader.load(project.image);
             texture.minFilter = THREE.LinearFilter;
 
-            const geometry = new THREE.PlaneGeometry(4, 5);
+            const isDesktop = window.innerWidth >= 768;
+
+            const geometry = isDesktop
+            ? new THREE.PlaneGeometry(8, 5)   // BIG desktop cards
+            : new THREE.PlaneGeometry(4, 5);  // Same mobile size
+
             const material = new THREE.MeshStandardMaterial({
                 map: texture,
                 side: THREE.DoubleSide,
             });
 
             const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.y = -idx * 6;
+            mesh.position.y = -idx * (isDesktop ? 8 : 6);
+
             mesh.position.z = -idx * 0.5;
 
             (mesh as any).userData = { project, index: idx };
@@ -205,14 +212,17 @@ export default function Projects3D() {
 
             const progress = scrollProgressRef.current;
 
-            cardGroup.position.y = progress * (projects.length - 1) * 6;
+            const spacing = window.innerWidth >= 768 ? 8 : 6;
+cardGroup.position.y = progress * (projects.length - 1) * spacing;
+
 
             cards.forEach((card, idx) => {
                 const cardScroll = progress * (projects.length - 1);
                 const distance = Math.abs(idx - cardScroll);
 
-                const scale = 1 - Math.min(distance * 0.3, 0.7);
-                card.scale.set(scale, scale, 1);
+                const scale = 1.1 - Math.min(distance * 0.25, 0.8);
+card.scale.set(scale, scale, 1);
+
 
                 const material = card.material as THREE.MeshStandardMaterial;
                 material.opacity = 1 - Math.min(distance * 0.4, 0.8);
