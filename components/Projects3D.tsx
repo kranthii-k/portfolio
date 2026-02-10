@@ -152,9 +152,22 @@ export default function Projects3D() {
             const fadeStart = windowHeight * 0.3;
             setScrollOpacity(Math.max(0, 1 - (scrolled / fadeStart)));
 
-            // Better index calculation - changes earlier for smoother transitions
+            // FIXED: Better index calculation with threshold
+            // This ensures the last card updates earlier
             const rawIndex = progress * (projects.length - 1);
-            const newIndex = Math.round(rawIndex);
+            let newIndex;
+            
+            // Use a threshold of 0.3 (30%) to switch to the next card
+            const fractionalPart = rawIndex % 1;
+            if (fractionalPart >= 0.3) {
+                newIndex = Math.ceil(rawIndex);
+            } else {
+                newIndex = Math.floor(rawIndex);
+            }
+            
+            // Clamp to valid range
+            newIndex = Math.max(0, Math.min(projects.length - 1, newIndex));
+            
             setCurrentProject(newIndex);
         };
 
