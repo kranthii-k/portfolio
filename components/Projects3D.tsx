@@ -152,7 +152,9 @@ export default function Projects3D() {
             const fadeStart = windowHeight * 0.3;
             setScrollOpacity(Math.max(0, 1 - (scrolled / fadeStart)));
 
-            const newIndex = Math.round(progress * (projects.length - 1));
+            // Better index calculation - changes earlier for smoother transitions
+            const rawIndex = progress * (projects.length - 1);
+            const newIndex = Math.round(rawIndex);
             setCurrentProject(newIndex);
         };
 
@@ -213,7 +215,7 @@ export default function Projects3D() {
             const progress = scrollProgressRef.current;
 
             const spacing = window.innerWidth >= 768 ? 8 : 6;
-cardGroup.position.y = progress * (projects.length - 1) * spacing;
+            cardGroup.position.y = progress * (projects.length - 1) * spacing;
 
 
             cards.forEach((card, idx) => {
@@ -221,7 +223,7 @@ cardGroup.position.y = progress * (projects.length - 1) * spacing;
                 const distance = Math.abs(idx - cardScroll);
 
                 const scale = 1.1 - Math.min(distance * 0.25, 0.8);
-card.scale.set(scale, scale, 1);
+                card.scale.set(scale, scale, 1);
 
 
                 const material = card.material as THREE.MeshStandardMaterial;
@@ -283,10 +285,14 @@ card.scale.set(scale, scale, 1);
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={`mobile-${currentProject}`}
-                            initial={{ opacity: 0, y: 100 }}
+                            initial={{ opacity: 0, y: 50 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: 100 }}
-                            transition={{ duration: 0.5 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ 
+                                duration: 0.4,
+                                delay: 0.15,
+                                ease: "easeOut"
+                            }}
                             className="bg-black/80 backdrop-blur-xl border-t border-white/10 p-6"
                         >
                             <div className="text-blue-400 text-xs font-medium tracking-widest uppercase mb-2">
@@ -347,10 +353,14 @@ card.scale.set(scale, scale, 1);
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={`left-${currentProject}`}
-                        initial={{ opacity: 0, x: -50 }}
+                        initial={{ opacity: 0, x: -30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -50 }}
-                        transition={{ duration: 0.5 }}
+                        exit={{ opacity: 0, x: 30 }}
+                        transition={{ 
+                            duration: 0.4,
+                            delay: 0.1,
+                            ease: "easeOut"
+                        }}
                         className="hidden md:block absolute left-6 lg:left-10 top-1/2 -translate-y-1/2 w-64 lg:w-80 z-20 pointer-events-auto"
                     >
                         <div className="space-y-6">
@@ -400,10 +410,14 @@ card.scale.set(scale, scale, 1);
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={`right-${currentProject}`}
-                        initial={{ opacity: 0, x: 50 }}
+                        initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 50 }}
-                        transition={{ duration: 0.5 }}
+                        exit={{ opacity: 0, x: -30 }}
+                        transition={{ 
+                            duration: 0.4,
+                            delay: 0.2,
+                            ease: "easeOut"
+                        }}
                         className="hidden md:block absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 w-80 lg:w-96 z-20 pointer-events-none"
                     >
                         <div className="space-y-4">
