@@ -23,7 +23,7 @@ export default function Home() {
 
       <footer className="py-12 text-center text-white/40 text-sm bg-[#0a0a0a] border-t border-white/5">
         <p>&copy; {new Date().getFullYear()} Kranthi. All rights reserved.</p>
-        <p className="mt-2 text-xs">Built with Next.js, Three.js & Framer Motion</p>
+        <p className="mt-2 text-xs">Built with ❤︎</p>
       </footer>
     </main>
   );
