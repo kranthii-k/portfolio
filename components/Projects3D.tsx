@@ -115,7 +115,7 @@ export default function Projects3D() {
             const isDesktop = window.innerWidth >= 768;
 
             const geometry = isDesktop
-            ? new THREE.PlaneGeometry(8, 5)   // BIG desktop cards
+            ? new THREE.PlaneGeometry(7, 5)   // BIG desktop cards
             : new THREE.PlaneGeometry(4, 5);  // Same mobile size
 
             const material = new THREE.MeshStandardMaterial({
@@ -124,7 +124,7 @@ export default function Projects3D() {
             });
 
             const mesh = new THREE.Mesh(geometry, material);
-            mesh.position.y = -idx * (isDesktop ? 8 : 6);
+            mesh.position.y = -idx * (isDesktop ? 7 : 6);
 
             mesh.position.z = -idx * 0.5;
 
