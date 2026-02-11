@@ -1,13 +1,10 @@
 @import "tailwindcss";
 
-@theme {
-  --color-background: #121212;
-  --color-foreground: #ffffff;
-}
-
 :root {
   --background: #121212;
   --foreground: #ffffff;
+  --color-background: #121212;
+  --color-foreground: #ffffff;
 }
 
 body {
