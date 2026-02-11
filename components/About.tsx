@@ -43,7 +43,7 @@ export default function About() {
                                 whileHover={{
                                     scale: 1.05,
                                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                    transition: { duration: 0.2, delay: 0 }
+                                    transition: { duration: 0.5, delay: 0 }
                                 }}
                                 className="p-4 border border-white/10 rounded-lg text-white/80 hover:text-white transition-colors cursor-pointer"
                             >
