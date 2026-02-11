@@ -115,8 +115,8 @@ export default function Projects3D() {
             const isDesktop = window.innerWidth >= 768;
 
             const geometry = isDesktop
-            ? new THREE.PlaneGeometry(7, 5)   // BIG desktop cards
-            : new THREE.PlaneGeometry(4, 5);  // Same mobile size
+                ? new THREE.PlaneGeometry(7, 5)   // BIG desktop cards
+                : new THREE.PlaneGeometry(4, 5);  // Same mobile size
 
             const material = new THREE.MeshStandardMaterial({
                 map: texture,
@@ -141,12 +141,12 @@ export default function Projects3D() {
             const rect = containerRef.current.getBoundingClientRect();
             const containerTop = rect.top;
             const windowHeight = window.innerHeight;
-            
+
             const scrolled = -containerTop;
             const maxScroll = rect.height - windowHeight;
-            
+
             const progress = Math.max(0, Math.min(1, scrolled / maxScroll));
-            
+
             scrollProgressRef.current = progress;
 
             const fadeStart = windowHeight * 0.3;
@@ -156,7 +156,7 @@ export default function Projects3D() {
             // This ensures the last card updates earlier
             const rawIndex = progress * (projects.length - 1);
             let newIndex;
-            
+
             // Use a threshold of 0.3 (30%) to switch to the next card
             const fractionalPart = rawIndex % 1;
             if (fractionalPart >= 0.3) {
@@ -164,10 +164,10 @@ export default function Projects3D() {
             } else {
                 newIndex = Math.floor(rawIndex);
             }
-            
+
             // Clamp to valid range
             newIndex = Math.max(0, Math.min(projects.length - 1, newIndex));
-            
+
             setCurrentProject(newIndex);
         };
 
@@ -180,6 +180,8 @@ export default function Projects3D() {
         let hoveredCard: THREE.Mesh | null = null;
 
         const handleMouseMove = (event: MouseEvent) => {
+            if (event.target !== canvasRef.current) return;
+
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
@@ -194,7 +196,7 @@ export default function Projects3D() {
             if (intersects.length > 0) {
                 const card = intersects[0].object as THREE.Mesh;
                 const idx = (card as any).userData.index;
-                
+
                 if (idx === currentProject) {
                     hoveredCard = card;
                     document.body.style.cursor = 'pointer';
@@ -202,7 +204,9 @@ export default function Projects3D() {
             }
         };
 
-        const handleClick = () => {
+        const handleClick = (event: MouseEvent) => {
+            if (event.target !== canvasRef.current) return;
+
             if (hoveredCard) {
                 const userData = (hoveredCard as any).userData;
                 window.open(userData.project.link, '_blank');
@@ -261,7 +265,7 @@ export default function Projects3D() {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('click', handleClick);
             window.removeEventListener('resize', handleResize);
-            
+
             cards.forEach(card => {
                 card.geometry.dispose();
                 (card.material as THREE.Material).dispose();
@@ -301,7 +305,7 @@ export default function Projects3D() {
                             initial={{ opacity: 0, y: 50 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -20 }}
-                            transition={{ 
+                            transition={{
                                 duration: 0.4,
                                 delay: 0.15,
                                 ease: "easeOut"
@@ -369,7 +373,7 @@ export default function Projects3D() {
                         initial={{ opacity: 0, x: -30 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 30 }}
-                        transition={{ 
+                        transition={{
                             duration: 0.4,
                             delay: 0.1,
                             ease: "easeOut"
@@ -426,7 +430,7 @@ export default function Projects3D() {
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -30 }}
-                        transition={{ 
+                        transition={{
                             duration: 0.4,
                             delay: 0.2,
                             ease: "easeOut"
