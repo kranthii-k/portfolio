@@ -16,12 +16,12 @@ export default function About() {
                         About Me
                     </h2>
                     <p className="text-xl text-white/70 leading-relaxed mb-6">
-                        I'm a creative developer specializing in building immersive 
-                        digital experiences that blend cutting-edge technology with 
+                        I'm a creative developer specializing in building immersive
+                        digital experiences that blend cutting-edge technology with
                         stunning visual design.
                     </p>
                     <p className="text-xl text-white/70 leading-relaxed">
-                        My work focuses on WebGL, React, Three.js, and modern web 
+                        My work focuses on WebGL, React, Three.js, and modern web
                         technologies to create unforgettable user experiences.
                     </p>
                 </motion.div>
@@ -40,7 +40,11 @@ export default function About() {
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.1 }}
-                                whileHover={{ scale: 1.05, backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
+                                whileHover={{
+                                    scale: 1.05,
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    transition: { duration: 0.2, delay: 0 }
+                                }}
                                 className="p-4 border border-white/10 rounded-lg text-white/80 hover:text-white transition-colors cursor-pointer"
                             >
                                 {skill}
